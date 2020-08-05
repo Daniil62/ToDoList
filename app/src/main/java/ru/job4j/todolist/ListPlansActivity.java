@@ -20,7 +20,9 @@ import java.util.List;
 
 public class ListPlansActivity extends AppCompatActivity {
     private RecyclerView recycler;
+    private LinearLayoutManager llm;
     private int position;
+    private int recyclerState = 0;
     private PlanStore ps;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,13 +31,32 @@ public class ListPlansActivity extends AppCompatActivity {
         Intent intent = getIntent();
         position = intent.getIntExtra("category_position", 0);
         ps = PlanStoreStore.get(position);
+        llm = new LinearLayoutManager(getApplicationContext());
         this.recycler = findViewById(R.id.list_plans_recycler);
-        this.recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        this.recycler.setLayoutManager(llm);
     }
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("recycler_position", llm.findFirstVisibleItemPosition());
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        recyclerState = (savedInstanceState.getInt("recycler_position"));
+        recycler.scrollToPosition(recyclerState);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (recyclerState == 0) {
+            recyclerState = llm.findFirstVisibleItemPosition();
+        }
+    }@Override
     protected void onResume() {
         super.onResume();
         loadItems();
+        recycler.scrollToPosition(recyclerState);
     }
     private void loadItems() {
         recycler.setAdapter(new ListPlansAdapter(ps.getPlans()));

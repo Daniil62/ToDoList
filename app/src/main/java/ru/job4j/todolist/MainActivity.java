@@ -26,17 +26,38 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recycler;
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
+    private LinearLayoutManager llm;
+    private int recyclerState = 0;
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(@Nullable Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_main);
+        llm = new LinearLayoutManager(getApplicationContext());
         recycler = findViewById(R.id.activity_main_recycler);
-        recycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recycler.setLayoutManager(llm);
         preferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         editor = preferences.edit();
         if (preferences != null) {
             restoreMemory();
+        }
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("recycler_position", llm.findFirstVisibleItemPosition());
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        recyclerState = (savedInstanceState.getInt("recycler_position"));
+        recycler.scrollToPosition(recyclerState);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (recyclerState == 0) {
+            recyclerState = llm.findFirstVisibleItemPosition();
         }
     }
     @Override
@@ -48,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadItems();
+        recycler.scrollToPosition(recyclerState);
     }
     private void loadItems() {
         recycler.setAdapter(new MainFragmentAdapter(PlanStoreStore.getPlanStores()));
