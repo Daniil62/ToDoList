@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_add_item"
+        android:title="Добавить план"
+        android:icon="@drawable/ic_action_menu_add"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_delete_items"
+        android:title="Удалить"
+        android:icon="@drawable/ic_action_menu_delete"
+        app:showAsAction="ifRoom"/>
+</menu>
