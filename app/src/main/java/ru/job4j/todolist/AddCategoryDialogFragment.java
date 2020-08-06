@@ -37,6 +37,7 @@ public class AddCategoryDialogFragment extends Fragment {
             header.setText(getString(R.string.edit_category));
             et.setText(PlanStoreStore.get(editablePosition).getTitle());
         }
+        et.setSelection(et.getText().length());
         cancel.setOnClickListener(v -> Objects.requireNonNull(getActivity()).onBackPressed());
         complete.setOnClickListener(v -> {
             String text = et.getText().toString();
