@@ -46,11 +46,12 @@ public class AddCategoryDialogFragment extends Fragment {
                     PlanStore ps = new PlanStore(text, false);
                     PlanStoreStore.add(ps);
                 }
-            }  else {
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }  else if (!text.equals("")) {
                 PlanStoreStore.get(intent.getIntExtra("editable_position",
                         0)).setTitle(text);
+                Objects.requireNonNull(getActivity()).onBackPressed();
             }
-            Objects.requireNonNull(getActivity()).onBackPressed();
         });
         return view;
     }

@@ -1,6 +1,7 @@
 package ru.job4j.todolist;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,10 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class ListPlansActivity extends AppCompatActivity {
+ //   private RecyclerView.Adapter<ListPlansHolder> adapter;
+ //   private List<Plan> stores;
     private RecyclerView recycler;
     private LinearLayoutManager llm;
     private int position;
@@ -28,12 +32,15 @@ public class ListPlansActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_plans);
+    //    stores = new ArrayList<>();
+    //    adapter = new ListPlansAdapter(stores);
         Intent intent = getIntent();
         position = intent.getIntExtra("category_position", 0);
         ps = PlanStoreStore.get(position);
         llm = new LinearLayoutManager(getApplicationContext());
         this.recycler = findViewById(R.id.list_plans_recycler);
         this.recycler.setLayoutManager(llm);
+    //    recycler.setAdapter(new ListPlansAdapter(stores));
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -52,13 +59,26 @@ public class ListPlansActivity extends AppCompatActivity {
         if (recyclerState == 0) {
             recyclerState = llm.findFirstVisibleItemPosition();
         }
-    }@Override
+    }
+    @Override
     protected void onResume() {
         super.onResume();
         loadItems();
         recycler.scrollToPosition(recyclerState);
     }
     private void loadItems() {
+     /*         Cursor cursor = this.getContentResolver().query(StoreContentProvider.CONTENT_URI,
+                null, null, null,
+                      null, null);
+        while (cursor.moveToNext()) {
+            int position = cursor.getPosition();
+            String text = cursor.getString(position);
+            if (text != null) {
+                stores.add(new Plan(text, cursor.isNull(position),
+                        cursor.getLong(position)));
+            }
+        }
+        adapter.notifyDataSetChanged();   */
         recycler.setAdapter(new ListPlansAdapter(ps.getPlans()));
     }
     static class ListPlansHolder extends RecyclerView.ViewHolder {
