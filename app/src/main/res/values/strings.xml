@@ -14,4 +14,7 @@
     <string name="save">Сохранить</string>
     <string name="button_edit">button_edit</string>
     <string name="save_changes">Сохранить изменения?</string>
+    <string name="order_by">Упорядочить</string>
+    <string name="by_date">По дате</string>
+    <string name="by_alphabet">По алфавиту</string>
 </resources>

@@ -15,4 +15,7 @@
     <string name="save">Save</string>
     <string name="button_edit">button_edit</string>
     <string name="save_changes">Save changes?</string>
+    <string name="order_by">Order by:</string>
+    <string name="by_date">Date</string>
+    <string name="by_alphabet">Alphabet</string>
 </resources>

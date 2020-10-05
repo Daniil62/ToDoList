@@ -8,19 +8,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
-public class DeleteThisPlanDialog extends DialogFragment {
+public class DeleteThisPlanDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity()).setMessage(R.string.delete_this_plan)
                 .setPositiveButton(R.string.delete, (dialog, which) -> callback
-                        .positiveDeleteThisPlanClick(DeleteThisPlanDialog.this))
+                        .positiveDeleteThisPlanClick(DeleteThisPlanDialogFragment.this))
                 .setNegativeButton(R.string.cancel, (dialog, which) -> callback
-                        .negativeDeleteThisPlanClick(DeleteThisPlanDialog.this)).create();
+                        .negativeDeleteThisPlanClick(DeleteThisPlanDialogFragment.this)).create();
     }
     public interface DeleteThisPlanDialogListener {
-        void positiveDeleteThisPlanClick(DeleteThisPlanDialog object);
-        void negativeDeleteThisPlanClick(DeleteThisPlanDialog object);
+        void positiveDeleteThisPlanClick(DeleteThisPlanDialogFragment object);
+        void negativeDeleteThisPlanClick(DeleteThisPlanDialogFragment object);
     }
     DeleteThisPlanDialogListener callback;
     @Override

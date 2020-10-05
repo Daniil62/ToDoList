@@ -1,13 +1,15 @@
 package ru.job4j.todolist;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,32 +17,42 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class ListPlansActivity extends AppCompatActivity {
- //   private RecyclerView.Adapter<ListPlansHolder> adapter;
- //   private List<Plan> stores;
+public class ListPlansActivity extends AppCompatActivity
+        implements OrderDialogFragment.OrderDialogListener {
     private RecyclerView recycler;
     private LinearLayoutManager llm;
-    private int position;
+    private String sequence = "";
+    private String order;
+    private int category_position;
     private int recyclerState = 0;
-    private PlanStore ps;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_plans);
-    //    stores = new ArrayList<>();
-    //    adapter = new ListPlansAdapter(stores);
         Intent intent = getIntent();
-        position = intent.getIntExtra("category_position", 0);
-        ps = PlanStoreStore.get(position);
+        category_position = intent.getIntExtra("category_position", 0);
         llm = new LinearLayoutManager(getApplicationContext());
         this.recycler = findViewById(R.id.list_plans_recycler);
         this.recycler.setLayoutManager(llm);
-    //    recycler.setAdapter(new ListPlansAdapter(stores));
+        EditText editText = findViewById(R.id.list_plans_editText);
+        this.sequence = "";
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                sequence = s.toString();
+                loadItems();
+            }
+        });
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -67,19 +79,9 @@ public class ListPlansActivity extends AppCompatActivity {
         recycler.scrollToPosition(recyclerState);
     }
     private void loadItems() {
-     /*         Cursor cursor = this.getContentResolver().query(StoreContentProvider.CONTENT_URI,
-                null, null, null,
-                      null, null);
-        while (cursor.moveToNext()) {
-            int position = cursor.getPosition();
-            String text = cursor.getString(position);
-            if (text != null) {
-                stores.add(new Plan(text, cursor.isNull(position),
-                        cursor.getLong(position)));
-            }
-        }
-        adapter.notifyDataSetChanged();   */
-        recycler.setAdapter(new ListPlansAdapter(ps.getPlans()));
+        ToDoListBaseHelper helper = new ToDoListBaseHelper(this);
+        recycler.setAdapter(new ListPlansAdapter(
+                helper.getPlansById(category_position, sequence, order)));
     }
     static class ListPlansHolder extends RecyclerView.ViewHolder {
         ListPlansHolder(@NonNull View itemView) {
@@ -87,6 +89,7 @@ public class ListPlansActivity extends AppCompatActivity {
         }
     }
     public class ListPlansAdapter extends RecyclerView.Adapter<ListPlansHolder> {
+        private ToDoListBaseHelper helper;
         private List<Plan> list;
         ListPlansAdapter(List<Plan> list) {
             this.list = list;
@@ -104,6 +107,7 @@ public class ListPlansActivity extends AppCompatActivity {
         public ListPlansHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
             View view = inflater.inflate(R.layout.plan_module, viewGroup, false);
+            helper = new ToDoListBaseHelper(ListPlansActivity.this);
             return new ListPlansHolder(view);
         }
         @Override
@@ -117,13 +121,16 @@ public class ListPlansActivity extends AppCompatActivity {
                 title.setOnClickListener(v -> {
                     Intent intent = new Intent(ListPlansActivity.this,
                             PlanActivity.class);
-                    intent.putExtra("category_position", position);
-                    intent.putExtra("position", title.getId());
+                    intent.putExtra("category_position", category_position);
+                    intent.putExtra("plan_id", plan.getId());
                     startActivity(intent);
                 });
             }
             cb.setChecked(plan.isMark());
-            cb.setOnCheckedChangeListener((buttonView, isChecked) -> plan.setMark(isChecked));
+            cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                plan.setMark(isChecked);
+                helper.markPlan(plan.getId(), isChecked);
+            });
         }
         @Override
         public int getItemCount() {
@@ -139,12 +146,14 @@ public class ListPlansActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_order_plan_dialog_call: {
+                DialogFragment dialog = new OrderDialogFragment();
+                dialog.show(getSupportFragmentManager(), "plan_order_dialog");
+                return true;
+            }
             case R.id.menu_add_plan: {
-                Date date = new Date();
-                Plan plan = new Plan("", false, date.getTime());
-                PlanStoreStore.get(position).add(plan);
                 Intent intent = new Intent(this, PlanActivity.class);
-                intent.putExtra("category_position", position);
+                intent.putExtra("category_position", category_position);
                 intent.putExtra("is_it_new_plan", true);
                 startActivity(intent);
                 return true;
@@ -152,7 +161,7 @@ public class ListPlansActivity extends AppCompatActivity {
             case R.id.menu_delete_plans: {
                 Intent intent = new Intent(this,
                         DeletePlansDialogActivator.class);
-                intent.putExtra("category_position", position);
+                intent.putExtra("category_position", category_position);
                 startActivity(intent);
                 return true;
             }
@@ -160,5 +169,15 @@ public class ListPlansActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             }
         }
+    }
+    @Override
+    public void positiveOrderClick(OrderDialogFragment object) {
+        order = ToDoListDBschema.PlanTable.Cols.TEXT;
+        loadItems();
+    }
+    @Override
+    public void negativeOrderClick(OrderDialogFragment object) {
+        order = ToDoListDBschema.PlanTable.Cols.CREATED;
+        loadItems();
     }
 }

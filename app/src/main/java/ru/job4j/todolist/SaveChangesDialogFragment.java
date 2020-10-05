@@ -8,30 +8,30 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 
-public class SaveChangesPlanWhenBackDialog extends DialogFragment {
+public class SaveChangesDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity()).setMessage(R.string.save_changes)
                 .setPositiveButton(R.string.save, (dialog, which) ->
-                        callback.positiveSaveChangesWhenBackClick(
-                        SaveChangesPlanWhenBackDialog.this))
+                        callback.positiveSaveChangesClick(
+                        SaveChangesDialogFragment.this))
                 .setNegativeButton(R.string.cancel, (dialog, which) ->
-                        callback.negativeSaveChangesWhenBackClick(
-                                SaveChangesPlanWhenBackDialog.this)).create();
+                        callback.negativeSaveChangesClick(
+                                SaveChangesDialogFragment.this)).create();
     }
-    public interface SaveChangesPlanWhenBackListener {
-        void positiveSaveChangesWhenBackClick(SaveChangesPlanWhenBackDialog object);
-        void negativeSaveChangesWhenBackClick(SaveChangesPlanWhenBackDialog object);
+    public interface SaveChangesListener {
+        void positiveSaveChangesClick(SaveChangesDialogFragment object);
+        void negativeSaveChangesClick(SaveChangesDialogFragment object);
     }
-    SaveChangesPlanWhenBackListener callback;
+    SaveChangesListener callback;
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            callback = (SaveChangesPlanWhenBackListener) context;
+            callback = (SaveChangesListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException("must implement SaveChangesPlanWhenBackListener "
+            throw new ClassCastException("must implement SaveChangesListener "
                     + context.toString());
         }
     }

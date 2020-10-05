@@ -15,41 +15,39 @@ import java.util.Objects;
 
 public class AddCategoryDialogFragment extends Fragment {
     public static AddCategoryDialogFragment of(int value) {
-        AddCategoryDialogFragment acdf = new AddCategoryDialogFragment();
+        AddCategoryDialogFragment fragment = new AddCategoryDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(AddCategoryDialogActivity.ADD_CATEGORY_FOR, 0);
-        acdf.setArguments(bundle);
-        return acdf;
+        bundle.putInt(AddCategoryDialogActivity.ADD_CATEGORY_FOR, value);
+        fragment.setArguments(bundle);
+        return fragment;
     }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_category_dialog, container, false);
+        ToDoListBaseHelper helper = new ToDoListBaseHelper(getContext());
         TextView header = view.findViewById(R.id.add_category_dialog_header);
         EditText et = view.findViewById(R.id.add_category_editText);
         Button cancel = view.findViewById(R.id.add_category_cancel_button);
         Button complete = view.findViewById(R.id.add_category_complete_button);
         Intent intent = Objects.requireNonNull(getActivity()).getIntent();
         boolean variant = intent.getBooleanExtra("variant_for_add", false);
-        int editablePosition = intent.getIntExtra("editable_position", -1);
+        int editablePosition = intent.getIntExtra("editable_position", 0);
         if (!variant && editablePosition != -1) {
             header.setText(getString(R.string.edit_category));
-            et.setText(PlanStoreStore.get(editablePosition).getTitle());
+            et.setText(helper.getCategoryTitle(editablePosition));
         }
         et.setSelection(et.getText().length());
         cancel.setOnClickListener(v -> Objects.requireNonNull(getActivity()).onBackPressed());
         complete.setOnClickListener(v -> {
             String text = et.getText().toString();
-            if (variant) {
-                if (!text.equals("")) {
-                    PlanStore ps = new PlanStore(text, false);
-                    PlanStoreStore.add(ps);
+            if (!text.equals("")) {
+                if (variant) {
+                    helper.addCategory(text);
+                } else {
+                    helper.editCategory(editablePosition, text);
                 }
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }  else if (!text.equals("")) {
-                PlanStoreStore.get(intent.getIntExtra("editable_position",
-                        0)).setTitle(text);
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
