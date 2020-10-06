@@ -4,19 +4,19 @@
 
     <item
         android:id="@+id/menu_order_plan_dialog_call"
-        android:title="Упорядочить"
+        android:title="@string/order_by"
         android:icon="@drawable/ic_action_menu_order"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menu_add_plan"
-        android:title="Добавить категорию"
+        android:title="@string/add_category"
         android:icon="@drawable/ic_action_menu_add"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menu_delete_plans"
-        android:title="Удалить"
+        android:title="@string/delete"
         android:icon="@drawable/ic_action_menu_delete"
         app:showAsAction="ifRoom"/>
 </menu>

@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
 
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
             final PlanStore ps = this.list.get(i);
             TextView title = holder.itemView.findViewById(R.id.list_module_textView);
             CheckBox cb = holder.itemView.findViewById(R.id.list_module_checkBox);
-            ImageButton edit = holder.itemView.findViewById(R.id.list_module_button_edit);
+            ImageView edit = holder.itemView.findViewById(R.id.list_module_button_edit);
             int id = ps.getId();
             if (title != null) {
                 title.setId(id);

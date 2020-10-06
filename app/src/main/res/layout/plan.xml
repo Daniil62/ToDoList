@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorMain"
+    android:background="@drawable/gradient_background"
     android:gravity="center">
 
     <LinearLayout
@@ -32,7 +32,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout4"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0"
-            tools:layout_editor_absoluteX="0dp" />
+            tools:layout_editor_absoluteX="0dp"
+            tools:ignore="Autofill,LabelFor" />
     </LinearLayout>
 
     <LinearLayout
@@ -49,19 +50,22 @@
             android:id="@+id/plan_button_clear"
             android:layout_width="125dp"
             android:layout_height="wrap_content"
-            android:text="@string/erase" />
+            android:text="@string/erase"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/plan_button_back"
             android:layout_width="125dp"
             android:layout_height="wrap_content"
-            android:text="@string/back" />
+            android:text="@string/back"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/plan_button_save"
             android:layout_width="125dp"
             android:layout_height="wrap_content"
-            android:text="@string/save" />
+            android:text="@string/save"
+            tools:ignore="ButtonStyle" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

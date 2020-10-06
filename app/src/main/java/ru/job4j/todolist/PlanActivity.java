@@ -42,7 +42,6 @@ public class PlanActivity extends AppCompatActivity
         isItNewPlan = intent.getBooleanExtra("is_it_new_plan", false);
         helper = new ToDoListBaseHelper(this);
         date = new Date();
-        et.setSelection(et.getText().length());
         clear.setOnClickListener(v -> et.setText(""));
         back.setOnClickListener(v -> buttonBackClick());
         save.setOnClickListener(v -> buttonSave());
@@ -58,6 +57,7 @@ public class PlanActivity extends AppCompatActivity
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
         createDate.setText(sdf.format(plan.getCreated()));
         et.setText(plan.getText());
+        et.setSelection(et.getText().length());
     }
     private void buttonSave() {
         String text = et.getText().toString();

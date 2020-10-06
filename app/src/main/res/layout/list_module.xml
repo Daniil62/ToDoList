@@ -3,38 +3,37 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingTop="13dp"
+    android:paddingBottom="13dp"
+    android:background="@drawable/gradient_background">
 
     <CheckBox
         android:id="@+id/list_module_checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/list_module_textView"
-        android:layout_width="371dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="46dp"
+        android:layout_marginEnd="46dp"
         android:layout_toEndOf="@+id/list_module_checkBox"
         android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/list_module_checkBox"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/list_module_button_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/colorMain"
         android:layout_alignStart="@+id/list_module_textView"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/button_edit"
         app:layout_constraintEnd_toEndOf="parent"
