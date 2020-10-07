@@ -21,7 +21,7 @@
     <TextView
         android:id="@+id/list_module_textView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="29dp"
         android:layout_marginStart="46dp"
         android:layout_marginEnd="46dp"
         android:layout_toEndOf="@+id/list_module_checkBox"
