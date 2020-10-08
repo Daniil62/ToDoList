@@ -9,32 +9,27 @@
     android:background="@drawable/gradient_background"
     android:gravity="center">
 
-    <LinearLayout
+
+    <TextView
+        android:id="@+id/creation_plan_date_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/plan_editText_field"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="60dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout4">
-
-        <TextView
-            android:id="@+id/creation_plan_date_textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@color/colorAccent"/>
-
-        <EditText
-            android:id="@+id/plan_editText_field"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:inputType="textMultiLine"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout4"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            tools:layout_editor_absoluteX="0dp"
-            tools:ignore="Autofill,LabelFor" />
-    </LinearLayout>
+        android:layout_marginBottom="58dp"
+        android:gravity="center"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout4"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="Autofill,LabelFor"
+        tools:layout_editor_absoluteX="0dp" />
 
     <LinearLayout
         android:id="@+id/linearLayout4"

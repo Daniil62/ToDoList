@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,6 +32,8 @@ public class PlanActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.plan);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN |
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         et = findViewById(R.id.plan_editText_field);
         Button clear = findViewById(R.id.plan_button_clear);
         Button back = findViewById(R.id.plan_button_back);
