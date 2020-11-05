@@ -1,5 +1,6 @@
 package ru.job4j.todolist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,10 +9,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.util.Objects;
+import ru.job4j.todolist.store.ToDoListBaseHelper;
 
 public class AddCategoryDialogFragment extends Fragment {
     public static AddCategoryDialogFragment of(int value) {
@@ -27,6 +30,9 @@ public class AddCategoryDialogFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_category_dialog, container, false);
         ToDoListBaseHelper helper = new ToDoListBaseHelper(getContext());
+        InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(
+                getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         TextView header = view.findViewById(R.id.add_category_dialog_header);
         EditText et = view.findViewById(R.id.add_category_editText);
         Button cancel = view.findViewById(R.id.add_category_cancel_button);
@@ -39,8 +45,13 @@ public class AddCategoryDialogFragment extends Fragment {
             et.setText(helper.getCategoryTitle(editablePosition));
         }
         et.setSelection(et.getText().length());
-        cancel.setOnClickListener(v -> Objects.requireNonNull(getActivity()).onBackPressed());
+        cancel.setOnClickListener(v -> {Objects.requireNonNull(getActivity()).onBackPressed();
+            imm.hideSoftInputFromWindow(getActivity()
+                    .getWindow().getDecorView().getWindowToken(), 0);
+        });
         complete.setOnClickListener(v -> {
+            imm.hideSoftInputFromWindow(getActivity()
+                    .getWindow().getDecorView().getWindowToken(), 0);
             String text = et.getText().toString();
             if (!text.equals("")) {
                 if (variant) {

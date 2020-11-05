@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.util.Objects;
 
+import ru.job4j.todolist.store.ToDoListBaseHelper;
+
 public class DeleteCategoryDialogFragment extends Fragment {
     private ToDoListBaseHelper helper;
     public static DeleteCategoryDialogFragment of(int value) {

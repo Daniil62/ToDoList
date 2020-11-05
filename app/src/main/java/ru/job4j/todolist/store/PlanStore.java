@@ -1,6 +1,6 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.store;
 
-class PlanStore {
+public class PlanStore {
     private int id;
     private String title;
     private boolean mark;
@@ -12,13 +12,13 @@ class PlanStore {
     public int getId() {
         return id;
     }
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
-    boolean isMark() {
+    public boolean isMark() {
         return mark;
     }
-    void setMark(boolean mark) {
+    public void setMark(boolean mark) {
         this.mark = mark;
     }
 }

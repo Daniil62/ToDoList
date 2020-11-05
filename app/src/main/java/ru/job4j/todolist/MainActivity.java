@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +20,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
+
+import ru.job4j.todolist.store.PlanStore;
+import ru.job4j.todolist.store.ToDoListBaseHelper;
+import ru.job4j.todolist.store.ToDoListDBschema;
 
 public class MainActivity extends AppCompatActivity
         implements OrderDialogFragment.OrderDialogListener {
@@ -37,13 +40,7 @@ public class MainActivity extends AppCompatActivity
         recycler = findViewById(R.id.activity_main_recycler);
         recycler.setLayoutManager(llm);
         EditText editText = findViewById(R.id.main_activity_editText);
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+        editText.addTextChangedListener(new TextMaster() {
             @Override
             public void afterTextChanged(Editable s) {
                 sequence = s.toString();

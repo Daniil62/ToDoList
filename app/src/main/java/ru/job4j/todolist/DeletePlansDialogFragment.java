@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
+import ru.job4j.todolist.store.ToDoListBaseHelper;
+
 public class DeletePlansDialogFragment extends Fragment {
     private ToDoListBaseHelper helper;
     private int position;

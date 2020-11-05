@@ -1,4 +1,4 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.store;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,10 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.job4j.todolist.model.Plan;
+
 public class ToDoListBaseHelper extends SQLiteOpenHelper {
     private static final String DB = "to_do_list.db";
     private static final int VERSION = 1;
-    ToDoListBaseHelper(Context context) {
+    public ToDoListBaseHelper(Context context) {
         super (context, DB, null, VERSION);
     }
     @Override
@@ -38,14 +40,14 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
-    void addCategory(String title) {
+    public void addCategory(String title) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ToDoListDBschema.CategoryTable.Cols.TITLE, title);
         values.put(ToDoListDBschema.CategoryTable.Cols.MARK, 0);
         db.insert(ToDoListDBschema.CategoryTable.TAB_NAME, null, values);
     }
-    List<PlanStore> getCategories(String sequence, String order) {
+    public List<PlanStore> getCategories(String sequence, String order) {
         List<PlanStore> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.CategoryTable.TAB_NAME, null,
@@ -67,21 +69,21 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return categories;
     }
-    void editCategory(int id, String title) {
+    public void editCategory(int id, String title) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ToDoListDBschema.CategoryTable.Cols.TITLE, title);
         db.update(ToDoListDBschema.CategoryTable.TAB_NAME, values,
                 "_id = " + id, new String[]{});
     }
-    void markCategory(int id, boolean mark) {
+    public void markCategory(int id, boolean mark) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ToDoListDBschema.CategoryTable.Cols.MARK, mark);
         db.update(ToDoListDBschema.CategoryTable.TAB_NAME, values,
                 "_id = " + id, new String[]{});
     }
-    boolean hasMarkedCategory() {
+    public boolean hasMarkedCategory() {
         boolean result = false;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.CategoryTable.TAB_NAME, null,
@@ -98,7 +100,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return result;
     }
-    String getCategoryTitle(int id) {
+    public String getCategoryTitle(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         String result = "";
         Cursor cursor = db.query(ToDoListDBschema.CategoryTable.TAB_NAME, null,
@@ -114,7 +116,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return result;
     }
-    void deleteSelectedCategory() {
+    public void deleteSelectedCategory() {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.CategoryTable.TAB_NAME, null,
                 null, null, null, null, null);
@@ -129,11 +131,11 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
     }
-    void totalDelete() {
+    public void totalDelete() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(ToDoListDBschema.CategoryTable.TAB_NAME, null, null);
     }
-    int size() {
+    public int size() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
                 "select _id from " + ToDoListDBschema.PlanTable.TAB_NAME, null);
@@ -141,7 +143,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
-    void setPlan(int foreignKey, Plan plan) {
+    public void setPlan(int foreignKey, Plan plan) {
         foreignKey += 1;
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
@@ -152,7 +154,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         values.put(ToDoListDBschema.PlanTable.Cols.CREATED, plan.getCreated());
         db.insert(ToDoListDBschema.PlanTable.TAB_NAME, null, values);
     }
-    void editPlan(int foreignKey, int id, String text) {
+    public void editPlan(int foreignKey, int id, String text) {
         foreignKey += 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -161,14 +163,14 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
                 ToDoListDBschema.PlanTable.Cols.FOREIGN_KEY
                         + " = " + foreignKey + " and _id = " + id, new String[]{});
     }
-    void markPlan(int id, boolean mark) {
+    public void markPlan(int id, boolean mark) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ToDoListDBschema.PlanTable.Cols.MARK, mark);
         db.update(ToDoListDBschema.PlanTable.TAB_NAME, values,
                 "_id = " + id, new String[]{});
     }
-    boolean hasMarkedPlan(int key) {
+    public boolean hasMarkedPlan(int key) {
         key += 1;
         boolean result = false;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -186,7 +188,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return result;
     }
-    List<Plan> getPlansById(int key, String sequence, String order) {
+    public List<Plan> getPlansById(int key, String sequence, String order) {
         key += 1;
         SQLiteDatabase db = this.getReadableDatabase();
         List<Plan> plans = new ArrayList<>();
@@ -210,7 +212,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return plans;
     }
-    Plan getPlan(int foreignKey, int id) {
+    public Plan getPlan(int foreignKey, int id) {
         foreignKey += 1;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.PlanTable.TAB_NAME, null,
@@ -235,7 +237,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return result;
     }
-    void deleteSelectedPlans(int key) {
+    public void deleteSelectedPlans(int key) {
         key += 1;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.PlanTable.TAB_NAME, null,
@@ -251,7 +253,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
     }
-    void deleteThisPlan(int id) {
+    public void deleteThisPlan(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.PlanTable.TAB_NAME, null,
                  "_id = ?",
@@ -267,7 +269,7 @@ public class ToDoListBaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
     }
-    void clearCategory(int key) {
+    public void clearCategory(int key) {
         key += 1;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query(ToDoListDBschema.PlanTable.TAB_NAME, null,

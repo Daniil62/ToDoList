@@ -1,17 +1,17 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.model;
 
-class Plan {
+public class Plan {
     private int id;
     private String text;
     private boolean mark;
     private long created;
-    Plan(int position, String text, boolean mark, long created) {
+    public Plan(int position, String text, boolean mark, long created) {
         this.id = position;
         this.text = text;
         this.mark = mark;
         this.created = created;
     }
-    void setText(String text) {
+    public void setText(String text) {
         this.text = text;
     }
     public int getId() {
@@ -20,16 +20,19 @@ class Plan {
     public void setId(int id) {
         this.id = id;
     }
-    String getText() {
+    public String getText() {
         return text;
     }
-    boolean isMark() {
+    public boolean isMark() {
         return mark;
     }
-    void setMark(boolean mark) {
+    public void setMark(boolean mark) {
         this.mark = mark;
     }
-    long getCreated() {
+    public long getCreated() {
         return created;
+    }
+    public void setCreated(long created) {
+        this.created = created;
     }
 }

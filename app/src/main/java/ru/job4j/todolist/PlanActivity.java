@@ -17,6 +17,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
+import ru.job4j.todolist.model.Plan;
+import ru.job4j.todolist.store.FileStore;
+import ru.job4j.todolist.store.IStore;
+import ru.job4j.todolist.store.ToDoListBaseHelper;
+
 public class PlanActivity extends AppCompatActivity
         implements SaveChangesDialogFragment.SaveChangesListener,
         DeleteThisPlanDialogFragment.DeleteThisPlanDialogListener {
@@ -26,6 +31,7 @@ public class PlanActivity extends AppCompatActivity
     private int categoryPosition;
     private int plan_id;
     private ToDoListBaseHelper helper;
+    private IStore fileStore;
     private boolean isItNewPlan;
     private Date date;
     @Override
@@ -44,6 +50,7 @@ public class PlanActivity extends AppCompatActivity
         plan_id = intent.getIntExtra("plan_id", 0);
         isItNewPlan = intent.getBooleanExtra("is_it_new_plan", false);
         helper = new ToDoListBaseHelper(this);
+        fileStore = FileStore.getInstance(this);
         date = new Date();
         clear.setOnClickListener(v -> et.setText(""));
         back.setOnClickListener(v -> buttonBackClick());
@@ -52,7 +59,7 @@ public class PlanActivity extends AppCompatActivity
     }
     private void loadIt() {
         if (helper.size() > 0 && !isItNewPlan) {
-            plan = helper.getPlan(categoryPosition, plan_id);
+            plan = fileStore.get(plan_id - 1);
         } else {
             plan = new Plan(plan_id,"", false, date.getTime());
         }
@@ -68,8 +75,10 @@ public class PlanActivity extends AppCompatActivity
             if (isItNewPlan) {
                 plan.setText(text);
                 helper.setPlan(categoryPosition, plan);
+                fileStore.add(plan);
             } else {
                 helper.editPlan(categoryPosition, plan_id, text);
+                fileStore.edit(plan_id - 1, helper.getPlan(categoryPosition, plan_id));
             }
             finish();
         }
@@ -118,6 +127,7 @@ public class PlanActivity extends AppCompatActivity
     @Override
     public void positiveDeleteThisPlanClick(DeleteThisPlanDialogFragment object) {
         helper.deleteThisPlan(plan_id);
+        fileStore.delete(plan_id - 1);
         finish();
     }
     @Override
