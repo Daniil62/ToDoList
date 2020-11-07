@@ -2,7 +2,9 @@ package ru.job4j.todolist;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,14 +14,12 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
-
 import ru.job4j.todolist.model.Plan;
-import ru.job4j.todolist.store.FileStore;
-import ru.job4j.todolist.store.IStore;
 import ru.job4j.todolist.store.ToDoListBaseHelper;
 
 public class PlanActivity extends AppCompatActivity
@@ -31,9 +31,10 @@ public class PlanActivity extends AppCompatActivity
     private int categoryPosition;
     private int plan_id;
     private ToDoListBaseHelper helper;
-    private IStore fileStore;
     private boolean isItNewPlan;
     private Date date;
+    private ImageView photo;
+    private final static int REQUEST_IMAGE_CAPTURE = 1;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,21 +46,35 @@ public class PlanActivity extends AppCompatActivity
         Button back = findViewById(R.id.plan_button_back);
         Button save = findViewById(R.id.plan_button_save);
         createDate = findViewById(R.id.creation_plan_date_textView);
+        photo = findViewById(R.id.plan_photo);
         Intent intent = Objects.requireNonNull(getIntent());
         categoryPosition = intent.getIntExtra("category_position", 0);
         plan_id = intent.getIntExtra("plan_id", 0);
         isItNewPlan = intent.getBooleanExtra("is_it_new_plan", false);
         helper = new ToDoListBaseHelper(this);
-        fileStore = FileStore.getInstance(this);
         date = new Date();
         clear.setOnClickListener(v -> et.setText(""));
         back.setOnClickListener(v -> buttonBackClick());
         save.setOnClickListener(v -> buttonSave());
+        photo.setOnClickListener(v -> {
+            Intent intent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (intent1.resolveActivity(this.getPackageManager()) != null) {
+                startActivityForResult(intent1, REQUEST_IMAGE_CAPTURE);
+            }
+        });
         loadIt();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE || requestCode == RESULT_OK) {
+            Bundle extras = Objects.requireNonNull(data).getExtras();
+            Bitmap bitmap = (Bitmap) Objects.requireNonNull(extras).get("data");
+            photo.setImageBitmap(bitmap);
+        }
     }
     private void loadIt() {
         if (helper.size() > 0 && !isItNewPlan) {
-            plan = fileStore.get(plan_id - 1);
+            plan = helper.getPlan(categoryPosition, plan_id);
         } else {
             plan = new Plan(plan_id,"", false, date.getTime());
         }
@@ -75,10 +90,8 @@ public class PlanActivity extends AppCompatActivity
             if (isItNewPlan) {
                 plan.setText(text);
                 helper.setPlan(categoryPosition, plan);
-                fileStore.add(plan);
             } else {
                 helper.editPlan(categoryPosition, plan_id, text);
-                fileStore.edit(plan_id - 1, helper.getPlan(categoryPosition, plan_id));
             }
             finish();
         }
@@ -127,7 +140,6 @@ public class PlanActivity extends AppCompatActivity
     @Override
     public void positiveDeleteThisPlanClick(DeleteThisPlanDialogFragment object) {
         helper.deleteThisPlan(plan_id);
-        fileStore.delete(plan_id - 1);
         finish();
     }
     @Override
