@@ -1,4 +1,4 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,8 +6,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-public abstract class AddCategoryDialogActivity extends FragmentActivity {
-    public static final String ADD_CATEGORY_FOR = "add_category__for";
+import ru.job4j.todolist.R;
+
+public abstract class DialogActivity extends FragmentActivity {
+    public static final String DIALOG_FOR = "dialog_for";
     public abstract Fragment loadFrg();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

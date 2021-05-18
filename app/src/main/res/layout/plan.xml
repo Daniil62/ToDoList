@@ -30,7 +30,7 @@
         tools:ignore="Autofill,LabelFor"
         tools:layout_editor_absoluteX="0dp" />
 
-    <ImageView
+    <!--ImageView
         android:id="@+id/plan_photo"
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_report_image"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription" /-->
 
     <LinearLayout
         android:id="@+id/linearLayout4"

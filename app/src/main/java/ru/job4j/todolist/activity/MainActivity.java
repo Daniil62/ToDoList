@@ -1,5 +1,6 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.activity;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,12 +22,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.List;
 
-import ru.job4j.todolist.store.PlanStore;
-import ru.job4j.todolist.store.ToDoListBaseHelper;
-import ru.job4j.todolist.store.ToDoListDBschema;
+import ru.job4j.todolist.activator.AddCategoryDialogActivator;
+import ru.job4j.todolist.activator.DeleteCategoryDialogActivator;
+import ru.job4j.todolist.data_base.DbApp;
+import ru.job4j.todolist.data_base.ToDoDataBase;
+import ru.job4j.todolist.dialog.OrderDialogFragment;
+import ru.job4j.todolist.R;
+import ru.job4j.todolist.tool.TextMaster;
+import ru.job4j.todolist.model.Category;
+import ru.job4j.todolist.data_base.DbSchema;
 
 public class MainActivity extends AppCompatActivity
         implements OrderDialogFragment.OrderDialogListener {
+    private ToDoDataBase dataBase;
     private RecyclerView recycler;
     private LinearLayoutManager llm;
     private int recyclerState = 0;
@@ -36,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_main);
+        setDatabase();
         llm = new LinearLayoutManager(getApplicationContext());
         recycler = findViewById(R.id.activity_main_recycler);
         recycler.setLayoutManager(llm);
@@ -47,6 +56,9 @@ public class MainActivity extends AppCompatActivity
                 loadItems();
             }
         });
+    }
+    private void setDatabase() {
+        dataBase = DbApp.getDatabase();
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -73,8 +85,10 @@ public class MainActivity extends AppCompatActivity
         recycler.scrollToPosition(recyclerState);
     }
     private void loadItems() {
-        ToDoListBaseHelper helper = new ToDoListBaseHelper(this);
-        recycler.setAdapter(new MainFragmentAdapter(helper.getCategories(sequence, order)));
+        String query = "select * from " + DbSchema.CategoryTable.TAB_NAME
+                + " where title like '%" + sequence + "%'" + " order by " + order;
+        recycler.setAdapter(new MainFragmentAdapter(dataBase.categoryDao()
+                .getCategories(new SimpleSQLiteQuery(query))));
     }
     static class ListHolder extends RecyclerView.ViewHolder {
         ListHolder(@NonNull View itemView) {
@@ -82,9 +96,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
     public class MainFragmentAdapter extends RecyclerView.Adapter<ListHolder> {
-        private ToDoListBaseHelper helper;
-        private final List<PlanStore> list;
-        MainFragmentAdapter(List<PlanStore> list) {
+        private final List<Category> list;
+        MainFragmentAdapter(List<Category> list) {
             this.list = list;
         }
         @Override
@@ -100,12 +113,11 @@ public class MainActivity extends AppCompatActivity
         public ListHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
             View view = inflater.inflate(R.layout.list_module, viewGroup, false);
-            helper = new ToDoListBaseHelper(MainActivity.this);
             return new ListHolder(view);
         }
         @Override
         public void onBindViewHolder(@NonNull MainActivity.ListHolder holder, int i) {
-            final PlanStore ps = this.list.get(i);
+            final Category ps = this.list.get(i);
             TextView title = holder.itemView.findViewById(R.id.list_module_textView);
             CheckBox cb = holder.itemView.findViewById(R.id.list_module_checkBox);
             ImageView edit = holder.itemView.findViewById(R.id.list_module_button_edit);
@@ -116,21 +128,19 @@ public class MainActivity extends AppCompatActivity
                 title.setOnClickListener(v -> {
                     Intent intent = new Intent(MainActivity.this,
                             ListPlansActivity.class);
-                    intent.putExtra("category_position", title.getId());
+                    intent.putExtra("category_position", ps.getId());
                     startActivity(intent);
                 });
             }
-            cb.setChecked(ps.isMark());
+            cb.setChecked(ps.getMark() > 0);
             cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                ps.setMark(isChecked);
-                helper.markCategory(id, isChecked);
+                ps.setMark(isChecked ? 1 : 0);
+                dataBase.categoryDao().markCategory(id, isChecked ? 1 : 0);
             });
             edit.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this,
                         AddCategoryDialogActivator.class);
-                if (title != null) {
-                    intent.putExtra("editable_position", id);
-                }
+                intent.putExtra("editable_position", id);
                 startActivity(intent);
             });
         }
@@ -148,19 +158,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_order_dialog_call: {
+            case (R.id.menu_order_dialog_call) : {
                 DialogFragment dialog = new OrderDialogFragment();
                 dialog.show(getSupportFragmentManager(), "category_order_dialog");
                 return true;
             }
-            case R.id.menu_add_item: {
+            case (R.id.menu_add_item) : {
                 Intent intent = new Intent(MainActivity.this,
                         AddCategoryDialogActivator.class);
                 intent.putExtra("variant_for_add", true);
                 startActivity(intent);
                 return true;
             }
-            case R.id.menu_delete_items: {
+            case (R.id.menu_delete_items) : {
                 Intent intent = new Intent(MainActivity.this,
                         DeleteCategoryDialogActivator.class);
                 startActivity(intent);
@@ -173,12 +183,12 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public void positiveOrderClick(OrderDialogFragment object) {
-        order = ToDoListDBschema.CategoryTable.Cols.TITLE;
+        order = DbSchema.CategoryTable.Cols.TITLE;
         loadItems();
     }
     @Override
     public void negativeOrderClick(OrderDialogFragment object) {
-        order = "_id";
+        order = "id";
         loadItems();
     }
 }

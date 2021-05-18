@@ -1,4 +1,4 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.dialog;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,14 +11,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.util.Objects;
 
-import ru.job4j.todolist.store.ToDoListBaseHelper;
+import ru.job4j.todolist.R;
+import ru.job4j.todolist.activity.DialogActivity;
+import ru.job4j.todolist.data_base.DbApp;
+import ru.job4j.todolist.data_base.ToDoDataBase;
 
 public class DeleteCategoryDialogFragment extends Fragment {
-    private ToDoListBaseHelper helper;
+    private ToDoDataBase dataBase;
     public static DeleteCategoryDialogFragment of(int value) {
         DeleteCategoryDialogFragment fragment = new DeleteCategoryDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(DeleteCategoryDialogActivity.DELETE_CATEGORY_FOR, value);
+        bundle.putInt(DialogActivity.DIALOG_FOR, value);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -27,23 +30,27 @@ public class DeleteCategoryDialogFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.delete_category_dialog, container, false);
+        setDataBase();
         TextView title = view.findViewById(R.id.delete_category_title_textView);
         Button cancel = view.findViewById(R.id.delete_category_cancel_button);
         Button delete = view.findViewById(R.id.delete_category_delete_button);
-        helper = new ToDoListBaseHelper(getContext());
-        boolean mark = helper.hasMarkedCategory();
-        if (mark) {
+        int mark = dataBase.categoryDao().hasMarkedCategory();
+        if (mark > 0) {
             title.setText(R.string.delete_selected);
         }
         cancel.setOnClickListener(v -> Objects.requireNonNull(getActivity()).onBackPressed());
-        delete.setOnClickListener(v -> {
-            if (mark) {
-                helper.deleteSelectedCategory();
-            } else {
-                helper.totalDelete();
-            }
-            Objects.requireNonNull(getActivity()).onBackPressed();
-        });
+        delete.setOnClickListener(v -> onDeleteClick(mark));
         return view;
+    }
+    private void onDeleteClick(int mark) {
+        if (mark > 0) {
+            dataBase.categoryDao().deleteSelectedCategory();
+        } else {
+            dataBase.categoryDao().totalDelete();
+        }
+        Objects.requireNonNull(getActivity()).onBackPressed();
+    }
+    private void setDataBase() {
+        dataBase = DbApp.getDatabase();
     }
 }

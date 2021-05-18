@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.job4j.todolist">
 
     <uses-permission android:name = "android.permission.WRITE EXTERNAL STORAGE" />
@@ -7,27 +8,29 @@
     <uses-feature android:name="android.hardware.camera" android:required="true"/>
 
     <application
+        android:name=".data_base.DbApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="AllowBackup">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ListPlansActivity" />
-        <activity android:name=".AddCategoryDialogActivator"
+        <activity android:name=".activity.ListPlansActivity" />
+        <activity android:name=".activator.AddCategoryDialogActivator"
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar.MinWidth"/>
-        <activity android:name=".DeleteCategoryDialogActivator"
+        <activity android:name=".activator.DeleteCategoryDialogActivator"
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar.MinWidth"/>
-        <activity android:name=".PlanActivity" />
-        <activity android:name=".DeletePlansDialogActivator"
+        <activity android:name=".activity.PlanActivity" />
+        <activity android:name=".activator.DeletePlansDialogActivator"
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar.MinWidth"/>
     </application>
 

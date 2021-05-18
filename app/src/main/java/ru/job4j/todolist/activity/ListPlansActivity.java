@@ -1,5 +1,6 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.activity;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,12 +20,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import java.util.List;
+import ru.job4j.todolist.activator.DeletePlansDialogActivator;
+import ru.job4j.todolist.data_base.DbApp;
+import ru.job4j.todolist.data_base.ToDoDataBase;
+import ru.job4j.todolist.dialog.OrderDialogFragment;
+import ru.job4j.todolist.R;
+import ru.job4j.todolist.tool.TextMaster;
 import ru.job4j.todolist.model.Plan;
-import ru.job4j.todolist.store.ToDoListBaseHelper;
-import ru.job4j.todolist.store.ToDoListDBschema;
+import ru.job4j.todolist.data_base.DbSchema;
 
 public class ListPlansActivity extends AppCompatActivity
         implements OrderDialogFragment.OrderDialogListener {
+    private ToDoDataBase dataBase;
     private RecyclerView recycler;
     private LinearLayoutManager llm;
     private String sequence = "";
@@ -35,6 +42,7 @@ public class ListPlansActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_plans);
+        setDataBase();
         Intent intent = getIntent();
         category_position = intent.getIntExtra("category_position", 0);
         llm = new LinearLayoutManager(getApplicationContext());
@@ -49,6 +57,9 @@ public class ListPlansActivity extends AppCompatActivity
                 loadItems();
             }
         });
+    }
+    private void setDataBase() {
+        dataBase = DbApp.getDatabase();
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -75,9 +86,11 @@ public class ListPlansActivity extends AppCompatActivity
         recycler.scrollToPosition(recyclerState);
     }
     private void loadItems() {
-        ToDoListBaseHelper helper = new ToDoListBaseHelper(this);
+        String query = "select * from " + DbSchema.PlanTable.TAB_NAME
+                + " where foreignKey = " + category_position + " and plan_text like '%"
+                + sequence + "%'" + " order by " + order;
         recycler.setAdapter(new ListPlansAdapter(
-                helper.getPlansById(category_position, sequence, order)));
+                dataBase.planDao().getPlans(new SimpleSQLiteQuery(query))));
     }
     static class ListPlansHolder extends RecyclerView.ViewHolder {
         ListPlansHolder(@NonNull View itemView) {
@@ -85,8 +98,7 @@ public class ListPlansActivity extends AppCompatActivity
         }
     }
     public class ListPlansAdapter extends RecyclerView.Adapter<ListPlansHolder> {
-        private ToDoListBaseHelper helper;
-        private List<Plan> list;
+        private final List<Plan> list;
         ListPlansAdapter(List<Plan> list) {
             this.list = list;
         }
@@ -103,7 +115,6 @@ public class ListPlansActivity extends AppCompatActivity
         public ListPlansHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
             View view = inflater.inflate(R.layout.plan_module, viewGroup, false);
-            helper = new ToDoListBaseHelper(ListPlansActivity.this);
             return new ListPlansHolder(view);
         }
         @Override
@@ -113,7 +124,7 @@ public class ListPlansActivity extends AppCompatActivity
             CheckBox cb = holder.itemView.findViewById(R.id.plan_module_checkBox);
             if (title != null) {
                 title.setId(i);
-                title.setText(plan.getText());
+                title.setText(plan.getPlan_text());
                 title.setOnClickListener(v -> {
                     Intent intent = new Intent(ListPlansActivity.this,
                             PlanActivity.class);
@@ -122,10 +133,10 @@ public class ListPlansActivity extends AppCompatActivity
                     startActivity(intent);
                 });
             }
-            cb.setChecked(plan.isMark());
+            cb.setChecked(plan.isPlan_mark() > 0);
             cb.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                plan.setMark(isChecked);
-                helper.markPlan(plan.getId(), isChecked);
+                plan.setPlan_mark(isChecked ? 1 : 0);
+                dataBase.planDao().markPlan(plan.getId(), isChecked ? 1 : 0);
             });
         }
         @Override
@@ -142,19 +153,19 @@ public class ListPlansActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_order_plan_dialog_call: {
+            case (R.id.menu_order_plan_dialog_call) : {
                 DialogFragment dialog = new OrderDialogFragment();
                 dialog.show(getSupportFragmentManager(), "plan_order_dialog");
                 return true;
             }
-            case R.id.menu_add_plan: {
+            case (R.id.menu_add_plan) : {
                 Intent intent = new Intent(this, PlanActivity.class);
                 intent.putExtra("category_position", category_position);
                 intent.putExtra("is_it_new_plan", true);
                 startActivity(intent);
                 return true;
             }
-            case R.id.menu_delete_plans: {
+            case (R.id.menu_delete_plans) : {
                 Intent intent = new Intent(this,
                         DeletePlansDialogActivator.class);
                 intent.putExtra("category_position", category_position);
@@ -168,12 +179,12 @@ public class ListPlansActivity extends AppCompatActivity
     }
     @Override
     public void positiveOrderClick(OrderDialogFragment object) {
-        order = ToDoListDBschema.PlanTable.Cols.TEXT;
+        order = DbSchema.PlanTable.Cols.TEXT;
         loadItems();
     }
     @Override
     public void negativeOrderClick(OrderDialogFragment object) {
-        order = ToDoListDBschema.PlanTable.Cols.CREATED;
+        order = DbSchema.PlanTable.Cols.CREATED;
         loadItems();
     }
 }

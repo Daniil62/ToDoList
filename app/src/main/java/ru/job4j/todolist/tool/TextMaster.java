@@ -1,4 +1,4 @@
-package ru.job4j.todolist;
+package ru.job4j.todolist.tool;
 
 import android.text.Editable;
 import android.text.TextWatcher;

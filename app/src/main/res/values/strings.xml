@@ -17,4 +17,6 @@
     <string name="order_by">Упорядочить</string>
     <string name="by_date">По дате</string>
     <string name="by_alphabet">По алфавиту</string>
+    <string name="arrange">Упорядочить</string>
+    <string name="add_plan">Добавить план</string>
 </resources>

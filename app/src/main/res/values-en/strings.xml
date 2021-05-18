@@ -18,4 +18,6 @@
     <string name="order_by">Order by:</string>
     <string name="by_date">Date</string>
     <string name="by_alphabet">Alphabet</string>
+    <string name="arrange">Arrange</string>
+    <string name="add_plan">Add plan</string>
 </resources>
